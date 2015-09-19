@@ -1,0 +1,24 @@
+{% extends "_base.html" %}
+
+{% block title %}{{gallery.title}}{% endblock %}
+
+{% block content %}
+
+{% load thumbnail %}
+
+<h1>{{gallery.title}}</h1>
+
+{{gallery.description}}
+
+<ul class="gallery-photos">
+	{% for image in images %}<!--
+	--><li>
+		<a href="{% url 'gallery:image' gallery.slug forloop.counter %}">
+			{% thumbnail image.image "200x200" crop="noop" as thumb %}
+			<img src="{{ thumb.url }}" width="{{ thumb.width }}" height="{{ thumb.height }}">
+			{% endthumbnail %}
+		</a>
+	</li><!--
+	-->{% endfor %}
+</ul>
+{% endblock %}

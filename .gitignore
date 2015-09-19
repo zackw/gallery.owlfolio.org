@@ -1,0 +1,6 @@
+/assets
+/zackphotos/local_settings.pyc
+/zackphotos/production_settings.py
+/images/cache
+__pycache__
+*.pyc

@@ -1,0 +1,62 @@
+{% extends "_base.html" %}
+
+{% block title %}{{gallery.title}}{% endblock %}
+
+{% block content %}
+
+{% load thumbnail %}
+{% load gallery_tags %}
+
+<div class="gallery-image">
+	<div class="image">
+		{% thumbnail image.image "800x800" crop="noop" as thumb %}
+		<img id="{{image.pk}}" src="{{thumb.url}}" width="{{thumb.width}}" height="{{thumb.height}}">
+		{% endthumbnail %}
+	</div><!--
+
+	--><div class="comments">
+		{{image.notes}}
+		<dl>
+			<div class="col2 left">
+				<dt>Location</dt>
+				<dd>{% list_tags image.location %}</dd>
+				<dt>People</dt>
+				<dd>{% list_tags image.people %}</dd>
+			</div><!--
+			--><div class="col2 right">
+				<dt>Photographer</dt>
+				<dd>{% list_tags image.photographer %}</dd>
+				<dt>Tags</dt>
+				<dd>{% list_tags image.tags %}</dd>
+			</div>
+		</dl>
+
+		{% if current_user.is_authenticated %}
+		<form action="{% url 'gallery:comment' gallery.slug current_page %}" method="POST" id="gallery-comment-form">
+			<label for="comment-box">{{current_user.get_full_name}} says:</label>
+			<textarea name="comment" id="comment-box">{{user_comment.comment.raw}}</textarea>
+			<button type="submit" class="submit-button">Save comment</button>
+			{% csrf_token %}
+		</form>
+		{% else %}
+		<p class="logged-out-message">You are logged out. <a href="{% url 'login' %}?next={% url 'gallery:image' gallery.slug current_page %}">Log in</a> to comment.</p>
+		{% endif %}
+
+		{% for comment in comments %}
+		<strong class="comment-author">{{comment.user.get_full_name}} says:</strong>
+		<div class="comment-text">{{comment.comment}}</div>
+		{% endfor %}
+
+		<nav class="pagination">
+			{% if previous_page %}
+			<a href="{% url 'gallery:image' gallery.slug previous_page %}" class="previous">&laquo; Previous Image</a>
+			{% endif %}
+
+			{% if next_page %}
+			<a href="{% url 'gallery:image' gallery.slug next_page %}" class="next">Next Image &raquo;</a>
+			{% endif %}
+		</nav>
+	</div>
+
+</div>
+{% endblock %}
