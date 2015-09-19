@@ -1,5 +1,5 @@
 /assets
-/zackphotos/local_settings.pyc
+/zackphotos/local_settings.py
 /zackphotos/production_settings.py
 /images/cache
 __pycache__

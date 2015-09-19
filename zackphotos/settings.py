@@ -20,13 +20,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '0xh2)_o(e)#i8fi9k(4_b^k^12!*7_$cl)b2ld*p-!&-k3d2in'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 THUMBNAIL_DEBUG = False
 
-ALLOWED_HOSTS = ['10.0.0.19']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -89,10 +89,10 @@ WSGI_APPLICATION = 'zackphotos.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'photogallery',
-        'USER': 'photogallery',
-        'PASSWORD': 'K9Y$%qWU-%a;Nk"g',
-        'HOST': 'localhost',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
         'PORT': '',
     }
 }
