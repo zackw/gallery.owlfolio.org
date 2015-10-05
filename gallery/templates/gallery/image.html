@@ -15,7 +15,6 @@
 	</div><!--
 
 	--><div class="comments">
-		{{image.notes}}
 		<dl>
 			<div class="col2 left">
 				<dt>Location</dt>
@@ -30,10 +29,16 @@
 				<dd>{% list_tags image.tags %}</dd>
 			</div>
 		</dl>
+		{{image.notes}}
+
+		{% for comment in comments %}
+		<strong class="comment-author">{{comment.user.first_name}} says:</strong>
+		<div class="comment-text">{{comment.comment}}</div>
+		{% endfor %}
 
 		{% if current_user.is_authenticated %}
 		<form action="{% url 'gallery:comment' gallery.slug current_page %}" method="POST" id="gallery-comment-form">
-			<label for="comment-box">{{current_user.get_full_name}} says:</label>
+			<label for="comment-box">{{current_user.first_name}} says:</label>
 			<textarea name="comment" id="comment-box">{{user_comment.comment.raw}}</textarea>
 			<button type="submit" class="submit-button">Save comment</button>
 			{% csrf_token %}
@@ -41,11 +46,6 @@
 		{% else %}
 		<p class="logged-out-message">You are logged out. <a href="{% url 'login' %}?next={% url 'gallery:image' gallery.slug current_page %}">Log in</a> to comment.</p>
 		{% endif %}
-
-		{% for comment in comments %}
-		<strong class="comment-author">{{comment.user.get_full_name}} says:</strong>
-		<div class="comment-text">{{comment.comment}}</div>
-		{% endfor %}
 
 		<nav class="pagination">
 			{% if previous_page %}

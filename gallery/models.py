@@ -10,6 +10,8 @@ from taggit_autosuggest.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from taggit.models import GenericTaggedItemBase, TagBase
 
+import os
+
 class LocationTag(TagBase):
     class Meta:
         verbose_name = 'Location'
@@ -49,9 +51,12 @@ class Gallery(models.Model):
     def __str__(self):
         return self.title
 
+def image_upload_path(instance, filename):
+    return os.path.join(instance.gallery.slug, filename)
+
 class GalleryImage(SortableMixin):
     gallery = models.ForeignKey(Gallery)
-    image = ImageField(upload_to='gallery')
+    image = ImageField(upload_to=image_upload_path)
     notes = MarkupField(markup_type='markdown', default='', blank=True, help_text="Markdown is allowed")
     location = TaggableManager('Location', through=TaggedLocations, blank=True)
     people = TaggableManager('People', through=TaggedPeople, blank=True)
@@ -72,7 +77,7 @@ class GalleryComment(models.Model):
     image = models.ForeignKey(GalleryImage)
     user = models.ForeignKey(User)
     date = models.DateTimeField()
-    comment = MarkupField(markup_type='plain')
+    comment = MarkupField(markup_type='markdown')
 
     def is_published_version(self):
         return GalleryComment.objects.filter(image=self.image, user=self.user, date__gt=self.date).count() == 0
