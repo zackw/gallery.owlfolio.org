@@ -19,10 +19,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-	url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'admin/login.html'}, name="login"),
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'admin/login.html'}, name="login"),
     url(r'^accounts/', include('django.contrib.auth.urls')),
-    url(r'^gallery/', include('gallery.urls', namespace="gallery")),
     url(r'^autologin/', include('autologin.urls', namespace="autologin")),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
+    url(r'^', include('gallery.urls', namespace="gallery")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

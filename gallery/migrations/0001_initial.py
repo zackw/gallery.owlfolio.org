@@ -3,10 +3,10 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import taggit_autosuggest.managers
-from django.conf import settings
-import sorl.thumbnail.fields
 import markupfield.fields
 import django.utils.timezone
+import sorl.thumbnail.fields
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
@@ -20,9 +20,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Gallery',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('title', models.CharField(max_length=200)),
                 ('slug', models.SlugField()),
+                ('description', markupfield.fields.MarkupField(default='', blank=True, help_text='Markdown is allowed')),
+                ('description_markup_type', models.CharField(blank=True, choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown')], max_length=30, default='markdown', editable=False)),
+                ('_description_rendered', models.TextField(editable=False)),
             ],
             options={
                 'verbose_name_plural': 'galleries',
@@ -31,9 +34,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GalleryComment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('date', models.DateTimeField()),
-                ('comment', models.TextField()),
+                ('comment', markupfield.fields.MarkupField()),
+                ('comment_markup_type', models.CharField(choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown')], max_length=30, default='plain', editable=False)),
+                ('_comment_rendered', models.TextField(editable=False)),
             ],
             options={
                 'ordering': ['image', 'user'],
@@ -42,13 +47,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GalleryImage',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('image', sorl.thumbnail.fields.ImageField(upload_to='gallery')),
-                ('notes', markupfield.fields.MarkupField(blank=True, default='', rendered_field=True)),
-                ('notes_markup_type', models.CharField(editable=False, blank=True, choices=[('', '--'), ('html', 'HTML'), ('plain', 'Plain'), ('markdown', 'Markdown')], default='markdown', max_length=30)),
+                ('notes', markupfield.fields.MarkupField(default='', blank=True, help_text='Markdown is allowed')),
+                ('notes_markup_type', models.CharField(blank=True, choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown')], max_length=30, default='markdown', editable=False)),
                 ('_notes_rendered', models.TextField(editable=False)),
                 ('date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('sort_order', models.PositiveIntegerField(default=0, db_index=True, editable=False)),
+                ('sort_order', models.PositiveIntegerField(db_index=True, default=0, editable=False)),
                 ('gallery', models.ForeignKey(to='gallery.Gallery')),
             ],
             options={
@@ -58,53 +63,57 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LocationTag',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
-                ('name', models.CharField(unique=True, max_length=100, verbose_name='Name')),
-                ('slug', models.SlugField(unique=True, max_length=100, verbose_name='Slug')),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
+                ('name', models.CharField(verbose_name='Name', unique=True, max_length=100)),
+                ('slug', models.SlugField(verbose_name='Slug', unique=True, max_length=100)),
             ],
             options={
+                'verbose_name_plural': 'Locations',
                 'verbose_name': 'Location',
             },
         ),
         migrations.CreateModel(
             name='MiscTag',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
-                ('name', models.CharField(unique=True, max_length=100, verbose_name='Name')),
-                ('slug', models.SlugField(unique=True, max_length=100, verbose_name='Slug')),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
+                ('name', models.CharField(verbose_name='Name', unique=True, max_length=100)),
+                ('slug', models.SlugField(verbose_name='Slug', unique=True, max_length=100)),
             ],
             options={
-                'verbose_name': 'Misc',
+                'verbose_name_plural': 'Tags',
+                'verbose_name': 'Tag',
             },
         ),
         migrations.CreateModel(
             name='PeopleTag',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
-                ('name', models.CharField(unique=True, max_length=100, verbose_name='Name')),
-                ('slug', models.SlugField(unique=True, max_length=100, verbose_name='Slug')),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
+                ('name', models.CharField(verbose_name='Name', unique=True, max_length=100)),
+                ('slug', models.SlugField(verbose_name='Slug', unique=True, max_length=100)),
             ],
             options={
-                'verbose_name': 'People',
+                'verbose_name_plural': 'People',
+                'verbose_name': 'Person',
             },
         ),
         migrations.CreateModel(
             name='PhotographerTag',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
-                ('name', models.CharField(unique=True, max_length=100, verbose_name='Name')),
-                ('slug', models.SlugField(unique=True, max_length=100, verbose_name='Slug')),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
+                ('name', models.CharField(verbose_name='Name', unique=True, max_length=100)),
+                ('slug', models.SlugField(verbose_name='Slug', unique=True, max_length=100)),
             ],
             options={
+                'verbose_name_plural': 'Photographers',
                 'verbose_name': 'Photographer',
             },
         ),
         migrations.CreateModel(
             name='TaggedLocations',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('object_id', models.IntegerField(db_index=True, verbose_name='Object id')),
-                ('content_type', models.ForeignKey(related_name='gallery_taggedlocations_tagged_items', verbose_name='Content type', to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', related_name='gallery_taggedlocations_tagged_items', verbose_name='Content type')),
                 ('tag', models.ForeignKey(to='gallery.LocationTag', related_name='location')),
             ],
             options={
@@ -114,9 +123,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TaggedMisc',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('object_id', models.IntegerField(db_index=True, verbose_name='Object id')),
-                ('content_type', models.ForeignKey(related_name='gallery_taggedmisc_tagged_items', verbose_name='Content type', to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', related_name='gallery_taggedmisc_tagged_items', verbose_name='Content type')),
                 ('tag', models.ForeignKey(to='gallery.MiscTag', related_name='tags')),
             ],
             options={
@@ -126,9 +135,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TaggedPeople',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('object_id', models.IntegerField(db_index=True, verbose_name='Object id')),
-                ('content_type', models.ForeignKey(related_name='gallery_taggedpeople_tagged_items', verbose_name='Content type', to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', related_name='gallery_taggedpeople_tagged_items', verbose_name='Content type')),
                 ('tag', models.ForeignKey(to='gallery.PeopleTag', related_name='people')),
             ],
             options={
@@ -138,9 +147,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TaggedPhotographer',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('object_id', models.IntegerField(db_index=True, verbose_name='Object id')),
-                ('content_type', models.ForeignKey(related_name='gallery_taggedphotographer_tagged_items', verbose_name='Content type', to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', related_name='gallery_taggedphotographer_tagged_items', verbose_name='Content type')),
                 ('tag', models.ForeignKey(to='gallery.PhotographerTag', related_name='photographer')),
             ],
             options={
@@ -150,22 +159,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='galleryimage',
             name='location',
-            field=taggit_autosuggest.managers.TaggableManager(help_text='A comma-separated list of tags.', blank=True, to='gallery.LocationTag', through='gallery.TaggedLocations', verbose_name='Location'),
+            field=taggit_autosuggest.managers.TaggableManager(blank=True, through='gallery.TaggedLocations', help_text='A comma-separated list of tags.', to='gallery.LocationTag', verbose_name='Location'),
         ),
         migrations.AddField(
             model_name='galleryimage',
             name='people',
-            field=taggit_autosuggest.managers.TaggableManager(help_text='A comma-separated list of tags.', blank=True, to='gallery.PeopleTag', through='gallery.TaggedPeople', verbose_name='People'),
+            field=taggit_autosuggest.managers.TaggableManager(blank=True, through='gallery.TaggedPeople', help_text='A comma-separated list of tags.', to='gallery.PeopleTag', verbose_name='People'),
         ),
         migrations.AddField(
             model_name='galleryimage',
             name='photographer',
-            field=taggit_autosuggest.managers.TaggableManager(help_text='A comma-separated list of tags.', blank=True, to='gallery.PhotographerTag', through='gallery.TaggedPhotographer', verbose_name='Photographer'),
+            field=taggit_autosuggest.managers.TaggableManager(blank=True, through='gallery.TaggedPhotographer', help_text='A comma-separated list of tags.', to='gallery.PhotographerTag', verbose_name='Photographer'),
         ),
         migrations.AddField(
             model_name='galleryimage',
             name='tags',
-            field=taggit_autosuggest.managers.TaggableManager(help_text='A comma-separated list of tags.', blank=True, to='gallery.MiscTag', through='gallery.TaggedMisc', verbose_name='Tags'),
+            field=taggit_autosuggest.managers.TaggableManager(blank=True, through='gallery.TaggedMisc', help_text='A comma-separated list of tags.', to='gallery.MiscTag', verbose_name='Tags'),
         ),
         migrations.AddField(
             model_name='gallerycomment',
